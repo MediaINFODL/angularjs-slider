@@ -1,10 +1,10 @@
 /**
  * Angular JS slider directive
  *
- * (c) Rafal Zajac <rzajac@gmail.com>
- * http://github.com/rzajac/angularjs-slider
+ * (c) Jan Vesel <frikovc@gmail.com>
+ * http://github.com/frikovc/angularjs-slider
  *
- * Version: v0.1.6
+ * Version: v0.1.7
  *
  * Licensed under the MIT license
  */
