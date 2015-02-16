@@ -10,7 +10,18 @@ See original (https://github.com/rzajac/angularjs-slider) for complete documenta
 ```javascript
 // in controller
 $scope.sliderModel = 150;
-$scope.sliderContainer = $('#container-element');
+$scope.sliderContainer = '#container-element';
+$scope.sliderCallbacks = {
+	onStart: function(arg){
+		//code
+	},
+	onMove: function(arg){
+		//code
+	},
+	onEnd: function(arg){
+		//code
+	}
+}
 ```
 
 ```html

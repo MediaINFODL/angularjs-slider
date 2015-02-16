@@ -4,7 +4,7 @@
  * (c) Jan Vesel <frikovc@gmail.com>
  * http://github.com/frikovc/angularjs-slider
  *
- * Version: v0.1.7
+ * Version: v0.1.8
  *
  * Licensed under the MIT license
  */
@@ -196,10 +196,13 @@ function throttle(func, wait, options) {
     {
       var self = this;
 
-       if(this.scope.rzSliderContainer)
-          this.container = this.scope.rzSliderContainer
-        else
-          this.container = $document;
+      if(this.scope.rzSliderContainer)
+        this.container = $(this.scope.rzSliderContainer);
+      else
+        this.container = $document;
+
+      if(this.scope.rzSliderCallbacks)
+        this.callbacks = this.scope.rzSliderCallbacks;
 
 
 
@@ -762,7 +765,6 @@ function throttle(func, wait, options) {
      */
     bindEvents: function()
     {
-      console.log(this.container);
       this.minH.on('mousedown', angular.bind(this, this.onStart, this.minH, 'rzSliderModel'));
       if(this.range) { this.maxH.on('mousedown', angular.bind(this, this.onStart, this.maxH, 'rzSliderHigh')) }
 
@@ -795,12 +797,19 @@ function throttle(func, wait, options) {
       if(event.touches || (typeof(event.originalEvent) != 'undefined' && event.originalEvent.touches))
       {
         this.container.on('touchmove.rzslider', angular.bind(this, this.onMove, pointer));
+        this.container.on('touchleave.rzslider', angular.bind(this, this.onEnd));
         this.container.on('touchend.rzslider', angular.bind(this, this.onEnd));
       }
       else
       {
         this.container.on('mousemove.rzslider', angular.bind(this, this.onMove, pointer));
+        this.container.on('mouseleave.rzslider', angular.bind(this, this.onEnd));
         this.container.on('mouseup.rzslider', angular.bind(this, this.onEnd));
+      }
+
+
+      if(this.callbacks.onStart){
+        this.callbacks.onStart(this);
       }
     },
 
@@ -816,6 +825,8 @@ function throttle(func, wait, options) {
 
       event.stopPropagation();
       event.preventDefault();
+
+
 
       var eventX = event.clientX || (typeof(event.originalEvent) != 'undefined' ? event.originalEvent.touches[0].clientX : event.touches[0].clientX),
         sliderLO = this.sliderElem.rzsl,
@@ -875,6 +886,10 @@ function throttle(func, wait, options) {
         this.updateHandles(this.tracking, newOffset);
         this.scope.$apply();
       }
+
+      if(this.callbacks.onMove){
+        this.callbacks.onMove(this);
+      }
     },
 
     /**
@@ -906,7 +921,12 @@ function throttle(func, wait, options) {
 
       this.scope.$emit('slideEnded');
 
+      if(this.callbacks.onEnd){
+        this.callbacks.onEnd(this);
+      }
+
       this.tracking = '';
+
     }
   };
 
@@ -925,7 +945,8 @@ function throttle(func, wait, options) {
       rzSliderModel: '=?',
       rzSliderHigh: '=?',
       rzSliderTranslate: '&',
-      rzSliderContainer: '=?'
+      rzSliderContainer: '=?',
+      rzSliderCallbacks: '=?'
     },
     template:   '<span class="bar"></span>' + // 0 The slider bar
                 '<span class="bar selection"></span>' + // 1 Highlight between two handles
